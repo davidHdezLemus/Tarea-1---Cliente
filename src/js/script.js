@@ -1,7 +1,8 @@
+const bodyElement = document.getElementsByTagName("body");
 const timeElement = document.getElementById("time"); // Elemento HTML donde se mostrará el tiempo restante
 let inputElement = document.createElement("input"); // Crear un elemento de tipo input
 
-timeElement.appendChild(inputElement); // Añadir el elemento tipo input como hijo del elemento time
+bodyElement.appendChild(inputElement); // Añadir el elemento tipo input como hijo del elemento time
 inputElement.setAttribute("type", "date"); // Le añadimos el tipo de input que deseamos
 
 let fechaActual = new Date(); // Fecha actual
@@ -13,8 +14,10 @@ inputElement.addEventListener("change", () => {
   // Verificar si la fecha es válida y no es anterior a la fecha actual
   if (isNaN(fechaElegida.getTime())) {
     alert("El formato de la fecha no es válido. Inténtalo de nuevo.");
+    fechaElegida = new Date("11/24/2024");
   } else if (fechaElegida < fechaActual) {
     alert("La fecha elegida no puede ser anterior a la actual.");
+    fechaElegida = new Date("11/24/2024");
   } else {
     // Calcular diferencia en milisegundos
     let dateActual = fechaActual.getTime();
