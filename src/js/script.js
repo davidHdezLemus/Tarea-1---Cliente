@@ -1,174 +1,77 @@
-const bodyElement = document.getElementsByTagName("body");
-const timeElement = document.getElementById("time"); // Elemento HTML donde se mostrará el tiempo restante
-let inputElement = document.createElement("input"); // Crear un elemento de tipo input
+const bodyElement = document.getElementsByTagName("body")[0];
+const timeElement = document.getElementById("time");
+const divElement = document.createElement("div");
+const inputElement = document.createElement("input");
 
-bodyElement.appendChild(inputElement); // Añadir el elemento tipo input como hijo del elemento time
-inputElement.setAttribute("type", "date"); // Le añadimos el tipo de input que deseamos
+inputElement.setAttribute("type", "date");
+bodyElement.appendChild(divElement);
+divElement.appendChild(inputElement);
 
-let fechaActual = new Date(); // Fecha actual
+let currentDate = new Date();
+let predefinedDate = new Date("11/24/2024");
 
-// Añadir el evento change para detectar cuando el usuario elige una fecha
-inputElement.addEventListener("change", () => {
-  let fechaElegida = new Date(inputElement.value); // convertir la fecha elegida por el usuario a un objeto de tipo fecha
+let difference = predefinedDate.getTime() - currentDate.getTime();
+let interval;
 
-  // Verificar si la fecha es válida y no es anterior a la fecha actual
-  if (isNaN(fechaElegida.getTime())) {
-    alert("El formato de la fecha no es válido. Inténtalo de nuevo.");
-    fechaElegida = new Date("11/24/2024");
-  } else if (fechaElegida < fechaActual) {
-    alert("La fecha elegida no puede ser anterior a la actual.");
-    fechaElegida = new Date("11/24/2024");
-  } else {
-    // Calcular diferencia en milisegundos
-    let dateActual = fechaActual.getTime();
-    let dateElegida = fechaElegida.getTime();
-    let diferencia = dateElegida - dateActual; // Diferencia entre fecha elegida por el usuario y la fecha actual en milisegundos
+function calculateRemainingTime() {
+  let remainingSeconds = Math.floor(difference / 1000) - 7204;
 
-    let salir = false; // Variable para detener el contador
+  let seconds = Math.floor(remainingSeconds % 60);
+  let minutes = Math.floor((remainingSeconds / 60) % 60);
+  let hours = Math.floor((remainingSeconds / 3600) % 24);
+  let days = Math.floor((remainingSeconds / 86400) % 30);
+  let months = Math.floor(remainingSeconds / 2592000);
+  let years = Math.floor(remainingSeconds / 31536000);
 
-    // Función que calcula el tiempo restante
-    function calcularTiempoRestante() {
-      let diferenciaSegundos = Math.floor(diferencia / 1000); // Convertir la diferencia actualizada en segundos
+  let remainingTimeText = "";
 
-      // Calcular los segundos, minutos, horas, días, meses y años restantes
-      let segundos = Math.floor(diferenciaSegundos % 60);
-      let minutos = Math.floor((diferenciaSegundos / 60) % 60);
-      let horas = Math.floor((diferenciaSegundos / 3600) % 24);
-      let dias = Math.floor((diferenciaSegundos / 86400) % 30);
-      let meses = Math.floor((diferenciaSegundos / 2592000) % 12);
-      let años = Math.floor(diferenciaSegundos / 31536000);
+  if (years > 0) { remainingTimeText += years + " year(s), "; }
+  if (months > 0) { remainingTimeText += months + " month(s), "; }
+  if (days > 0) { remainingTimeText += days + " day(s), "; }
+  if (hours > 0) { remainingTimeText += hours + " hour(s), "; }
+  if (minutes > 0) { remainingTimeText += minutes + " minute(s), "; }
+  if (seconds > 0) { remainingTimeText += seconds + " second(s)"; }
 
-      let textoTiempoRestante = ""; // Inicializamos una cadena vacía
-
-      // Si hay años, meses, días, horas, minutos o segundos, añadirlos a la cadena
-      if (años > 0) { textoTiempoRestante += años + " año(s), "; }
-      if (meses > 0) { textoTiempoRestante += meses + " mes(es), "; }
-      if (dias > 0) { textoTiempoRestante += dias + " día(s), "; }
-      if (horas > 0) { textoTiempoRestante += horas + " hora(s), "; }
-      if (minutos > 0) { textoTiempoRestante += minutos + " minuto(s), "; }
-      if (segundos > 0) { textoTiempoRestante += segundos + " segundo(s)"; }
-
-      // Añadimos una clase para cambiar el color del texto según el tiempo restante
-      if (meses > 1) {
-        timeElement.classList.remove("orangeColor");
-        timeElement.classList.remove("redColor");
-        timeElement.classList.add("greenColor");
-      } else if (meses < 1 && dias >= 7) {
-        timeElement.classList.remove("greenColor");
-        timeElement.classList.remove("redColor");
-        timeElement.classList.add("orangeColor");
-      } else if (dias < 7) {
-        timeElement.classList.remove("greenColor");
-        timeElement.classList.remove("orangeColor");
-        timeElement.classList.add("redColor");
-      }
-
-      timeElement.innerText = textoTiempoRestante; // Mostrar el tiempo restante en el elemento HTML
-
-      // Si la diferencia llega a 0, eliminar las clases de colores del texto y mostrar mensaje
-      if (diferencia <= 0) {
-        timeElement.classList.remove("greenColor");
-        timeElement.classList.remove("orangeColor");
-        timeElement.classList.remove("redColor");
-        timeElement.innerText = "🎉🎈 ¡Felíz Cumpleaños!!!!! 🎉🎈";
-        salir = true; // Detener el contador
-        return;
-      }
-
-      diferencia -= 1000; // Restar 1 segundo (1000 ms) a la diferencia
-    }
-
-    if (!salir) {
-      let intervalo = setInterval(calcularTiempoRestante, 1000); // Llamar a la función cada segundo
-    }
-
-    calcularTiempoRestante(); // Llamar a la función
+  if (months === 1 || months > 1) {
+      timeElement.classList.remove("orangeColor", "redColor");
+      timeElement.classList.add("greenColor");
+  } else if (days >= 7) {
+      timeElement.classList.remove("greenColor", "redColor");
+      timeElement.classList.add("orangeColor");
+  } else if (days < 7) {
+      timeElement.classList.remove("greenColor", "orangeColor");
+      timeElement.classList.add("redColor");
   }
+
+  timeElement.innerText = remainingTimeText;
+
+  if (difference <= 0) {
+      clearInterval(interval);
+      timeElement.classList.remove("greenColor", "orangeColor", "redColor");
+      timeElement.innerText = "🎉🎈 Happy Birthday!!!!! 🎉🎈";
+  }
+
+  difference -= 1000;
+}
+
+calculateRemainingTime();
+interval = setInterval(calculateRemainingTime, 1000);
+
+inputElement.valueAsDate = predefinedDate;
+inputElement.addEventListener("change", () => {
+    let selectedDate = new Date(inputElement.value);
+
+    if (isNaN(selectedDate.getTime())) {
+        alert("The date format is not valid. Please try again.");
+        inputElement.valueAsDate = predefinedDate;
+        selectedDate = predefinedDate;
+    } else if (selectedDate < currentDate) {
+        alert("The selected date cannot be earlier than the current date.");
+        inputElement.valueAsDate = predefinedDate;
+        selectedDate = predefinedDate;
+    }
+
+    difference = selectedDate.getTime() - currentDate.getTime();
 });
 
-/*
-// Calcular diferencia en milisegundos
-let dateActual = fechaActual.getTime();
-let dateElegida = fechaElegida.getTime();
-let diferencia = dateElegida - dateActual; // Diferencia entre fecha elegida por el usuario y la fecha actual en milisegundos
-
-let salir = false; // Variable para detener el contador
-
-// Función que calcula el tiempo restante
-function calcularTiempoRestante() {
-  let diferenciaSegundos = Math.floor(diferencia / 1000); // Convertir la diferencia actualizada en segundos
-
-  // Calcular los segundos, minutos, horas, días, meses y años restantes
-  let segundos = Math.floor(diferenciaSegundos % 60);
-  let minutos = Math.floor((diferenciaSegundos / 60) % 60);
-  let horas = Math.floor((diferenciaSegundos / 3600) % 24);
-  let dias = Math.floor((diferenciaSegundos / 86400) % 30);
-  let meses = Math.floor((diferenciaSegundos / 2592000) % 12);
-  let años = Math.floor(diferenciaSegundos / 31536000);
-
-  let textoTiempoRestante = ""; // Inicializamos una cadena vacía
-
-  // Si hay años, meses, días, horas, minutos o segundos, añadirlos a la cadena
-  if (años > 0) { textoTiempoRestante += años + " año(s), "; }
-  if (meses > 0) { textoTiempoRestante += meses + " mes(es), "; }
-  if (dias > 0) { textoTiempoRestante += dias + " día(s), "; }
-  if (horas > 0) { textoTiempoRestante += horas + " hora(s), "; }
-  if (minutos > 0) { textoTiempoRestante += minutos + " minuto(s), "; }
-  if (segundos > 0) { textoTiempoRestante += segundos + " segundo(s)"; }
-
-  // Añadimos una clase para cambiar el color del texto según el tiempo restante
-  if (meses > 1) {
-    timeElement.classList.remove("orangeColor");
-    timeElement.classList.remove("redColor");
-    timeElement.classList.add("greenColor");
-  } else if (meses < 1 && dias >= 7) {
-    timeElement.classList.remove("greenColor");
-    timeElement.classList.remove("redColor");
-    timeElement.classList.add("orangeColor");
-  } else if (dias < 7) {
-    timeElement.classList.remove("greenColor");
-    timeElement.classList.remove("orangeColor");
-    timeElement.classList.add("redColor");
-  }
-
-  timeElement.innerText = textoTiempoRestante; // Mostrar el tiempo restante en el elemento HTML
-
-  // Si la diferencia llega a 0, eliminar las clases de colores del texto y mostrar mensaje
-  if (diferencia <= 0) {
-    timeElement.classList.remove("greenColor");
-    timeElement.classList.remove("orangeColor");
-    timeElement.classList.remove("redColor");
-    timeElement.innerText = "🎉🎈 ¡Felíz Cumpleaños!!!!! 🎉🎈";
-    salir = true; // Detener el contador
-    return;
-  }
-
-  diferencia -= 1000; // Restar 1 segundo (1000 ms) a la diferencia
-}
-
-if (!salir) {
-  let intervalo = setInterval(calcularTiempoRestante, 1000); // Llamar a la función cada segundo
-}
-
-calcularTiempoRestante(); // Llamar a la función
-*/
-/*
-**usar clearinterval**
-let counter = setInterval((){
-number-...
-if (...) {
-clearInterval(counter)
-}
-}, 1000);
-
-**usar el input date**
-const datePickerElement = document.getElementById("datePicker");
-datePickerElement.addEventListener("change", () => {
-  console.log(datePickerElement.value)
-  )})
-
-**ejemplo de añadir el input en js con atributos**
-let input = document.createElement("");
-image.setAttribute("src", "url...");
-image.alt = "ejemplo imagen";
-*/
+calculateRemainingTime();

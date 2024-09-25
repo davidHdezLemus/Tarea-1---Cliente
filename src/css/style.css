@@ -9,6 +9,7 @@ body {
   justify-content: center;
   align-items: center;
   height: 100vh;
+  flex-direction: column;
 }
 
 .redColor {
@@ -21,4 +22,16 @@ body {
 
 .orangeColor {
   color: orange;
+}
+
+#time {
+  margin-bottom: 5rem;
+}
+
+input {
+  font-size: 2rem;
+  border-radius: 10%;
+  border-color: green;
+  font-weight: bold;
+  color: green;
 }
