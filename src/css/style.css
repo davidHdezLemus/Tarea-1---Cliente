@@ -10,6 +10,10 @@ body {
   align-items: center;
   height: 100vh;
   flex-direction: column;
+  background-image: url('https://www.shutterstock.com/image-illustration/view-waterfall-forest-600nw-2327645439.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .redColor {
@@ -28,10 +32,26 @@ body {
   margin-bottom: 5rem;
 }
 
+.centerCounter {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  border: 2px solid green;
+  background-color: rgba(240, 240, 240, 0.5);
+  padding: 20px;
+  border-radius: 15px;
+  font-weight: bold;
+  color: green;
+  width: 145vh;
+}
+
+
 input {
   font-size: 2rem;
-  border-radius: 10%;
+  border-radius: 10px;
   border-color: green;
   font-weight: bold;
   color: green;
+  background-color: rgba(240, 240, 240, 0.3);
 }
